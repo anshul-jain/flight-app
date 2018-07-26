@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.syssolu.flightapp.service.FlightSearchService;
-import com.syssolu.flightapp.vo.FlightDetail;
+import com.syssolu.flightapp.vo.FlightDetailBean;
 
 @Slf4j
 @FlightSearchController
@@ -29,8 +29,8 @@ public class FlightSearchApiImpl implements FlightSearchApi {
 
 	@Override
 	@RequestMapping(method = RequestMethod.GET, value = "/{origin}/{destination}")
-	public ResponseEntity<List<FlightDetail>> search(@PathVariable("origin") String origin, @PathVariable("destination") String destination) {
+	public ResponseEntity<List<FlightDetailBean>> search(@PathVariable("origin") String origin, @PathVariable("destination") String destination) {
 		log.info("searching the flights with origin={} and destination={}", origin, destination);
-		return new ResponseEntity<List<FlightDetail>>(flightSearchService.search(origin, destination), HttpStatus.OK);
+		return new ResponseEntity<List<FlightDetailBean>>(flightSearchService.search(origin, destination), HttpStatus.OK);
 	}
 }

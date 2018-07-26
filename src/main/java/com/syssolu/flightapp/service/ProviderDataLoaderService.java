@@ -5,7 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -20,16 +23,26 @@ import org.springframework.stereotype.Service;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.syssolu.flightapp.util.CustomCsvToBean;
+import com.syssolu.flightapp.util.FlightDetailBeanBuilder;
 import com.syssolu.flightapp.vo.FlightDetail;
+import com.syssolu.flightapp.vo.FlightDetailBean;
 
 @Slf4j
 @Service
 public class ProviderDataLoaderService {
-	@Autowired
+
 	private ResourceLoader resourceLoader;
+	private FlightDetailBeanBuilder flightDetailBeanBuilder;
 	public static Integer count = 0;
 	String[] delimiter = {",", ":", "|"};
-	List<FlightDetail> flightDetails;
+	public Set<FlightDetailBean> flightDetails = new HashSet<FlightDetailBean>();
+
+	@Autowired
+	public ProviderDataLoaderService(ResourceLoader resourceLoader, FlightDetailBeanBuilder flightDetailBeanBuilder) {
+		this.resourceLoader = resourceLoader;
+		this.flightDetailBeanBuilder = flightDetailBeanBuilder;
+	}
+
 
 	@PostConstruct
 	public void init() {
@@ -42,24 +55,20 @@ public class ProviderDataLoaderService {
 		}
 		for (Resource resource : resources) {
 			try {
-				System.out.println(resource.getFilename());
-				System.out.println(resource.getDescription());
-				flightDetails = parseCsvFileToBeans(resource.getURL().getPath(), delimiter, FlightDetail.class);
-
-				for (FlightDetail flightDetail : flightDetails) {
-					System.out.println(flightDetail.toString());
-				}
+				//System.out.println(resource.getFilename());
+				//System.out.println(resource.getDescription());
+				flightDetails.addAll(parseCsvFileToBeans(resource.getURL().getPath(), delimiter, FlightDetail.class).stream().map(this::convertToBean).collect(Collectors.toSet()));
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		System.out.println(flightDetails.size());
 	}
 
-	public static <T> List<T> parseCsvFileToBeans(final String filename, final String[] fieldDelimiter,
-	                                              final Class<T> beanClass) throws FileNotFoundException {
+	private static <T> List<T> parseCsvFileToBeans(final String filename, final String[] fieldDelimiter,
+	                                               final Class<T> beanClass) throws FileNotFoundException {
 		List<T> finalData = new ArrayList();
 		CSVReader reader = null;
 		final CustomCsvToBean<T> csv = new CustomCsvToBean<T>();
@@ -88,7 +97,10 @@ public class ProviderDataLoaderService {
 			}
 			return finalData;
 		}
+	}
 
+	private FlightDetailBean convertToBean(FlightDetail flightDetail) {
+		return flightDetailBeanBuilder.build(flightDetail);
 	}
 }
 

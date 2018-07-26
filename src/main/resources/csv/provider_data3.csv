@@ -1,4 +1,4 @@
-Origin|Departure Time|Destination|Destination Time|Price
+Origin|DepartureTime|Destination|DestinationTime|Price
 LAS|6/29/2014 14:55:00|LAX|6/29/2014 16:10:00|$201.00
 MIA|6/17/2014 14:55:00|ORD|6/17/2014 17:10:00|$542.00
 LAS|6/29/2014 7:30:00|YYZ|6/29/2014 13:58:00|$678.00
