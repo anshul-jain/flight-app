@@ -7,14 +7,13 @@ import com.syssolu.flightapp.vo.FlightDetailBean;
 
 @Component
 public class FlightDetailBeanBuilder {
-	public FlightDetailBean build(FlightDetail flightDetail){
+	public FlightDetailBean build(FlightDetail flightDetail) {
 		FlightDetailBean flightDetailBean = new FlightDetailBean();
 		flightDetailBean.setOrigin(flightDetail.getOrigin());
 		flightDetailBean.setDestination(flightDetail.getDestination());
-		//flightDetailBean.setDepartureTime(new Date(flightDetail.getDepartureTime()));
-		//flightDetailBean.setDestinationTime(flightDetail.getDestinationTime());
-		//flightDetailBean.setPrice(flightDetail.getPrice());
-		System.out.println("called builder");
+		flightDetailBean.setDepartureTime(DateUtils.getFormattedDate(flightDetail.getDepartureTime()));
+		flightDetailBean.setDestinationTime(DateUtils.getFormattedDate(flightDetail.getDestinationTime()));
+		flightDetailBean.setPrice(Double.parseDouble(flightDetail.getPrice().substring(1)));
 		return flightDetailBean;
 	}
 }

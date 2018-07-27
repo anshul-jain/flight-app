@@ -35,7 +35,7 @@ public class ProviderDataLoaderService {
 	private FlightDetailBeanBuilder flightDetailBeanBuilder;
 	public static Integer count = 0;
 	String[] delimiter = {",", ":", "|"};
-	public Set<FlightDetailBean> flightDetails = new HashSet<FlightDetailBean>();
+	private Set<FlightDetailBean> flightDetails = new HashSet<FlightDetailBean>();
 
 	@Autowired
 	public ProviderDataLoaderService(ResourceLoader resourceLoader, FlightDetailBeanBuilder flightDetailBeanBuilder) {
@@ -55,8 +55,6 @@ public class ProviderDataLoaderService {
 		}
 		for (Resource resource : resources) {
 			try {
-				//System.out.println(resource.getFilename());
-				//System.out.println(resource.getDescription());
 				flightDetails.addAll(parseCsvFileToBeans(resource.getURL().getPath(), delimiter, FlightDetail.class).stream().map(this::convertToBean).collect(Collectors.toSet()));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -64,7 +62,6 @@ public class ProviderDataLoaderService {
 				e.printStackTrace();
 			}
 		}
-		System.out.println(flightDetails.size());
 	}
 
 	private static <T> List<T> parseCsvFileToBeans(final String filename, final String[] fieldDelimiter,
@@ -81,11 +78,9 @@ public class ProviderDataLoaderService {
 			finalData = csv.parse(strategy, reader);
 		} catch (IOException e) {
 			count++;
-//			if(!csv.isHasDataReturned()){
+
 			finalData = parseCsvFileToBeans(filename, fieldDelimiter,
 					beanClass);
-//			}
-
 			e.printStackTrace();
 		} finally {
 			if (reader != null) {
@@ -97,6 +92,14 @@ public class ProviderDataLoaderService {
 			}
 			return finalData;
 		}
+	}
+
+	public Set<FlightDetailBean> getFlightDetails() {
+		return flightDetails;
+	}
+
+	public void setFlightDetails(Set<FlightDetailBean> flightDetails) {
+		this.flightDetails = flightDetails;
 	}
 
 	private FlightDetailBean convertToBean(FlightDetail flightDetail) {
